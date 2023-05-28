@@ -1,5 +1,6 @@
 package br.com.lucolimac.credit.system.service.impl
 
+import br.com.lucolimac.credit.system.entity.Credit
 import br.com.lucolimac.credit.system.repository.CreditRepository
 import br.com.lucolimac.credit.system.service.ICreditService
 import org.springframework.stereotype.Service
@@ -11,7 +12,7 @@ class CreditService(
     private val creditRepository: CreditRepository,
     private val customerService: CustomerService
 ) : ICreditService {
-    override fun save(credit: br.com.lucolimac.credit.system.entity.Credit): br.com.lucolimac.credit.system.entity.Credit {
+    override fun save(credit: Credit): Credit {
         this.validDayFirstInstallment(credit.dayFirstInstallment)
         credit.apply {
             customer = customerService.findById(credit.customer?.id!!)
@@ -19,11 +20,11 @@ class CreditService(
         return this.creditRepository.save(credit)
     }
 
-    override fun findAllByCustomer(customerId: Long): List<br.com.lucolimac.credit.system.entity.Credit> =
+    override fun findAllByCustomer(customerId: Long): List<Credit> =
         this.creditRepository.findAllByCustomerId(customerId)
 
-    override fun findByCreditCode(customerId: Long, creditCode: UUID): br.com.lucolimac.credit.system.entity.Credit {
-        val credit: br.com.lucolimac.credit.system.entity.Credit = (this.creditRepository.findByCreditCode(creditCode)
+    override fun findByCreditCode(customerId: Long, creditCode: UUID): Credit {
+        val credit: Credit = (this.creditRepository.findByCreditCode(creditCode)
             ?: throw br.com.lucolimac.credit.system.exception.BusinessException("Creditcode $creditCode not found"))
         return if (credit.customer?.id == customerId) credit
         else throw IllegalArgumentException("Contact admin")
